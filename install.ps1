@@ -1,6 +1,6 @@
-# ═══════════════════════════════════════════════════════
-# UltraWater Client — Windows PowerShell Installer
-# ═══════════════════════════════════════════════════════
+# ----------------------------------------------------
+# UltraWater Client - Windows PowerShell Installer
+# ----------------------------------------------------
 $ErrorActionPreference = 'Stop'
 $GH_USER = 'kithlicat98-hub'
 $GH_REPO = 'ultrawater-deploy'
@@ -11,16 +11,16 @@ $EXE = "$INSTALL\UltraWater.exe"
 
 function Write-Banner { 
     Write-Host "" 
-    Write-Host "┌─────────────────────────────────────┐" -ForegroundColor Cyan 
-    Write-Host "│      UltraWater Client Installer    │" -ForegroundColor Cyan 
-    Write-Host "│    github.com/$GH_USER/$GH_REPO     │" -ForegroundColor Cyan 
-    Write-Host "└─────────────────────────────────────┘" -ForegroundColor Cyan 
+    Write-Host "+-------------------------------------+ " -ForegroundColor Cyan 
+    Write-Host "|      UltraWater Client Installer    | " -ForegroundColor Cyan 
+    Write-Host "|      github.com/$GH_USER/$GH_REPO   | " -ForegroundColor Cyan 
+    Write-Host "+-------------------------------------+ " -ForegroundColor Cyan 
     Write-Host ""
 }
-function Write-Step { param($msg) Write-Host "→ $msg" -ForegroundColor Cyan }
-function Write-OK { param($msg) Write-Host "✓ $msg" -ForegroundColor Green }
-function Write-Warn { param($msg) Write-Host "⚠ $msg" -ForegroundColor Yellow }
-function Write-Fail { param($msg) Write-Host "✗ $msg" -ForegroundColor Red; exit 1 }
+function Write-Step { param($msg) Write-Host "-> $msg" -ForegroundColor Cyan }
+function Write-OK { param($msg) Write-Host "[OK] $msg" -ForegroundColor Green }
+function Write-Warn { param($msg) Write-Host "[WARN] $msg" -ForegroundColor Yellow }
+function Write-Fail { param($msg) Write-Host "[FAIL] $msg" -ForegroundColor Red; exit 1 }
 
 Write-Banner
 $TMP = [System.IO.Path]::GetTempPath()
@@ -33,7 +33,7 @@ try {
     $wc.DownloadFile($ZIP_URL, $ZipPath) 
     Write-OK "Download complete"
 } catch { 
-    Write-Fail "Download failed: $_`nCheck if 'UltraWater-windows.zip' exists in your latest GitHub Release."
+    Write-Fail "Download failed: $_ Check if 'UltraWater-windows.zip' exists in your latest GitHub Release."
 }
 
 Write-Step "Extracting to $INSTALL..."
@@ -43,14 +43,14 @@ Expand-Archive -Path $ZipPath -DestinationPath $INSTALL -Force
 Remove-Item $ZipPath -Force
 Write-OK "Extracted"
 
-# ── Find the exe ────────────────────────────────────
+# -- Find the exe --
 if (-not (Test-Path $EXE)) { 
     $found = Get-ChildItem $INSTALL -Filter "UltraWater.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 
     if ($found) { $EXE = $found.FullName } else { Write-Fail "Could not locate UltraWater.exe in the extracted files." }
 }
 Write-OK "Executable: $EXE"
 
-# ── Shortcuts ───────────────────────────────────────
+# -- Shortcuts --
 $WS = New-Object -ComObject WScript.Shell
 $StartMenuDir = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
 $ShortcutSM = Join-Path $StartMenuDir "UltraWater Client.lnk"
@@ -60,15 +60,15 @@ foreach ($path in @($ShortcutSM, $ShortcutDT)) {
     $sc = $WS.CreateShortcut($path) 
     $sc.TargetPath = $EXE 
     $sc.WorkingDirectory = Split-Path $EXE 
-    $sc.Description = "UltraWater — Ultralight Minecraft Launcher" 
+    $sc.Description = "UltraWater - Ultralight Minecraft Launcher" 
     $sc.Save()
 }
 Write-OK "Desktop and Start Menu shortcuts created"
 
-# ── Done ────────────────────────────────────────────
+# -- Done --
 Write-Host ""
 Write-OK "Installation complete!"
-Write-Host "Open from: Desktop or Start Menu → UltraWater Client" -ForegroundColor Cyan
+Write-Host "Open from: Desktop or Start Menu -> UltraWater Client" -ForegroundColor Cyan
 Write-Host ""
 Start-Process "https://kithlicat98-hub.github.io/ultrawater/"
 
