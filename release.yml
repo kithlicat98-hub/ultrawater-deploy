@@ -24,7 +24,7 @@ jobs:
         run: pip install -r requirements.txt pyinstaller
 
       - name: Build
-        run: pyinstaller UltraWater.spec --noconfirm --clean
+        run: pyinstaller ultrawater.py --noconfirm --clean --name UltraWater --noconsole
 
       - name: Package ZIP
         run: Compress-Archive -Path dist\UltraWater\* -DestinationPath UltraWater-windows.zip
@@ -51,7 +51,7 @@ jobs:
         run: pip install -r requirements.txt pyinstaller
 
       - name: Build
-        run: pyinstaller UltraWater.spec --noconfirm --clean
+        run: pyinstaller ultrawater.py --noconfirm --clean --name UltraWater --noconsole
 
       - name: Package tar.gz
         run: tar -czf UltraWater-macos.tar.gz -C dist UltraWater/
@@ -80,7 +80,7 @@ jobs:
         run: pip install -r requirements.txt pyinstaller
 
       - name: Build
-        run: pyinstaller UltraWater.spec --noconfirm --clean
+        run: pyinstaller ultrawater.py --noconfirm --clean --name UltraWater
 
       - name: Package tar.gz
         run: tar -czf UltraWater-linux.tar.gz -C dist UltraWater/
