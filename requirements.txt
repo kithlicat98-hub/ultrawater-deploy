@@ -1,0 +1,14 @@
+# UltraWater Client — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# GUI Framework
+customtkinter>=5.2.0
+
+# Minecraft launcher library
+minecraft-launcher-lib>=8.0
+
+# Build tools (dev only)
+pyinstaller>=6.0
+
+# Optional: Process priority (Windows)
+psutil>=5.9.0

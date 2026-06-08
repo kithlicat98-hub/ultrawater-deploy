@@ -1,0 +1,124 @@
+name: Build & Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build
+        run: pyinstaller UltraWater.spec --noconfirm --clean
+
+      - name: Package ZIP
+        run: Compress-Archive -Path dist\UltraWater\* -DestinationPath UltraWater-windows.zip
+        shell: pwsh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: UltraWater-windows.zip
+          retention-days: 1
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build
+        run: pyinstaller UltraWater.spec --noconfirm --clean
+
+      - name: Package tar.gz
+        run: tar -czf UltraWater-macos.tar.gz -C dist UltraWater/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: UltraWater-macos.tar.gz
+          retention-days: 1
+
+  linux:
+    name: Linux
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y python3-tk
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build
+        run: pyinstaller UltraWater.spec --noconfirm --clean
+
+      - name: Package tar.gz
+        run: tar -czf UltraWater-linux.tar.gz -C dist UltraWater/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: UltraWater-linux.tar.gz
+          retention-days: 1
+
+  release:
+    name: Publish Release
+    needs: [ windows, macos, linux ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: SHA256 checksums
+        run: cd out && sha256sum * > checksums.sha256
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: "UltraWater Client ${{ github.ref_name }}"
+          body: |
+            ## UltraWater Client ${{ github.ref_name }}
+            No Python or Java required — just download, extract, and run.
+
+            | Platform | Download |
+            |---|---|
+            | 🪟 Windows | `UltraWater-windows.zip` — extract and run `UltraWater.exe` |
+            | 🍎 macOS | `UltraWater-macos.tar.gz` — extract and run `UltraWater` |
+            | 🐧 Linux | `UltraWater-linux.tar.gz` — extract and run `UltraWater` |
+          files: |
+            out/UltraWater-windows.zip
+            out/UltraWater-macos.tar.gz
+            out/UltraWater-linux.tar.gz
+            out/checksums.sha256
