@@ -1,14 +1,13 @@
 # ═══════════════════════════════════════════════════════
 #  UltraWater Client — Windows PowerShell Installer
-#  Usage: iwr -useb https://kithlicat98-hub.github.io/ultrawater/install.ps1 | iex
+#  Usage: iwr -useb https://kithlicat98-hub.github.io/ultrawater-deploy/install.ps1 | iex
 # ═══════════════════════════════════════════════════════
 $ErrorActionPreference = 'Stop'
 
 $GH_USER    = 'kithlicat98-hub'
-$GH_REPO    = 'ultrawater'
+$GH_REPO    = 'ultrawater-deploy'
 $BASE       = "https://github.com/$GH_USER/$GH_REPO/releases/latest/download"
-$SETUP_URL  = "$BASE/UltraWater-Setup.exe"
-$ZIP_URL    = "$BASE/UltraWater-windows-x64.zip"
+$ZIP_URL    = "$BASE/UltraWater-windows.zip"
 $INSTALL    = "$env:LOCALAPPDATA\UltraWater"
 $EXE        = "$INSTALL\UltraWater.exe"
 
@@ -28,38 +27,19 @@ function Write-Fail  { param($msg) Write-Host "✗  $msg" -ForegroundColor Red; 
 
 Write-Banner
 
-# ── Try to download and run the GUI installer ────────
-Write-Step "Downloading UltraWater-Setup.exe..."
 $TMP = [System.IO.Path]::GetTempPath()
-$SetupPath = Join-Path $TMP "UltraWater-Setup.exe"
+$ZipPath = Join-Path $TMP "UltraWater.zip"
+
+Write-Step "Downloading UltraWater (ZIP)..."
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $wc = New-Object System.Net.WebClient
-    $wc.DownloadFile($SETUP_URL, $SetupPath)
-    Write-OK "Downloaded installer"
-
-    Write-Step "Running installer — follow the prompts..."
-    Start-Process -FilePath $SetupPath -Wait
-    Write-OK "Setup complete"
-    Remove-Item $SetupPath -Force -ErrorAction SilentlyContinue
-    exit 0
-}
-catch {
-    Write-Warn "GUI installer failed — falling back to portable install"
-}
-
-# ── Fallback: portable ZIP install ──────────────────
-Write-Step "Downloading portable ZIP..."
-$ZipPath = Join-Path $TMP "UltraWater.zip"
-
-try {
     $wc = New-Object System.Net.WebClient
     $wc.DownloadFile($ZIP_URL, $ZipPath)
     Write-OK "Download complete"
 }
 catch {
-    Write-Fail "Download failed: $_`nCheck your internet connection and try again."
+    Write-Fail "Download failed: $_`nCheck your internet connection and verify the release exists on GitHub."
 }
 
 Write-Step "Extracting to $INSTALL..."
