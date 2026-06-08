@@ -1,12 +1,12 @@
 #!/usr/bin/env sh
 # ═══════════════════════════════════════════════════════
 #  UltraWater Client — macOS / Linux Installer
-#  Usage:  curl -fsSL https://kithlicat98-hub.github.io/ultrawater/install.sh | sh
+#  Usage:  curl -fsSL https://kithlicat98-hub.github.io/ultrawater-deploy/install.sh | sh
 # ═══════════════════════════════════════════════════════
 set -e
 
 GH_USER="kithlicat98-hub"
-GH_REPO="ultrawater"
+GH_REPO="ultrawater-deploy"
 BASE="https://github.com/${GH_USER}/${GH_REPO}/releases/latest/download"
 INSTALL_DIR="${HOME}/.local/share/ultrawater"
 BIN_DIR="${HOME}/.local/bin"
@@ -30,26 +30,21 @@ printf "│   github.com/%s/%s\n" "$GH_USER" "$GH_REPO"
 printf "└─────────────────────────────────────┘\n"
 printf "${C_RST}\n"
 
-# ── Detect OS + Arch ─────────────────────────────────
+# ── Detect OS ────────────────────────────────────────
 OS=$(uname -s)
-ARCH=$(uname -m)
 
 case "$OS" in
   Linux)
-    case "$ARCH" in
-      x86_64)         FILE="UltraWater-linux-x64.tar.gz" ;;
-      aarch64|arm64)  FILE="UltraWater-linux-arm64.tar.gz" ;;
-      *) die "Unsupported CPU architecture: $ARCH" ;;
-    esac ;;
+    FILE="UltraWater-linux.tar.gz" ;;
   Darwin)
-    FILE="UltraWater-macos-arm64.tar.gz" ;;
+    FILE="UltraWater-macos.tar.gz" ;;
   *)
     warn "Unsupported OS: $OS"
     printf "  Download manually: ${BASE}\n\n"; exit 1 ;;
 esac
 
 DOWNLOAD_URL="${BASE}/${FILE}"
-info "Platform : $OS / $ARCH"
+info "Platform : $OS"
 info "File     : $FILE"
 info "Dest     : $INSTALL_DIR"
 printf "\n"
