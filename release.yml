@@ -9,7 +9,6 @@ permissions:
   contents: write
 
 jobs:
-
   windows:
     name: Windows
     runs-on: windows-latest
@@ -21,28 +20,20 @@ jobs:
           python-version: '3.11'
           cache: pip
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
-      - name: Build with PyInstaller
+      - name: Build
         run: pyinstaller UltraWater.spec --noconfirm --clean
 
-      - name: Install Inno Setup
-        run: choco install innosetup -y --no-progress
-
-      - name: Build UltraWater-Setup.exe
-        run: iscc installer.iss
-
-      - name: Also package portable ZIP
-        shell: pwsh
+      - name: Package ZIP
         run: Compress-Archive -Path dist\UltraWater\* -DestinationPath UltraWater-windows.zip
+        shell: pwsh
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: |
-            UltraWater-Setup.exe
-            UltraWater-windows.zip
+          path: UltraWater-windows.zip
           retention-days: 1
 
   macos:
@@ -118,18 +109,15 @@ jobs:
           name: "UltraWater Client ${{ github.ref_name }}"
           body: |
             ## UltraWater Client ${{ github.ref_name }}
-            No Python or Java required — just download and run.
+            No Python or Java required — just download, extract, and run.
 
-            | Platform | File | Notes |
-            |---|---|---|
-            | 🪟 Windows | `UltraWater-Setup.exe` | Installer — creates Start Menu + desktop shortcut |
-            | 🪟 Windows | `UltraWater-windows.zip` | Portable — extract and run, no install |
-            | 🍎 macOS | `UltraWater-macos.tar.gz` | Extract and run |
-            | 🐧 Linux | `UltraWater-linux.tar.gz` | Extract and run |
+            | Platform | Download |
+            |---|---|
+            | 🪟 Windows | `UltraWater-windows.zip` — extract and run `UltraWater.exe` |
+            | 🍎 macOS | `UltraWater-macos.tar.gz` — extract and run `UltraWater` |
+            | 🐧 Linux | `UltraWater-linux.tar.gz` — extract and run `UltraWater` |
           files: |
-            out/UltraWater-Setup.exe
             out/UltraWater-windows.zip
             out/UltraWater-macos.tar.gz
             out/UltraWater-linux.tar.gz
             out/checksums.sha256
-
