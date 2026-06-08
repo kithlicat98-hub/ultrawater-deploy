@@ -9,6 +9,7 @@ permissions:
   contents: write
 
 jobs:
+
   windows:
     name: Windows
     runs-on: windows-latest
@@ -23,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
-      - name: Build
-        run: pyinstaller ultrawater.py --noconfirm --clean --name UltraWater --noconsole
+      - name: Build Executable
+        run: python build/build.py exe
 
       - name: Package ZIP
         run: Compress-Archive -Path dist\UltraWater\* -DestinationPath UltraWater-windows.zip
@@ -50,8 +51,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
-      - name: Build
-        run: pyinstaller ultrawater.py --noconfirm --clean --name UltraWater --noconsole
+      - name: Build Executable
+        run: python build/build.py exe
 
       - name: Package tar.gz
         run: tar -czf UltraWater-macos.tar.gz -C dist UltraWater/
@@ -79,8 +80,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
-      - name: Build
-        run: pyinstaller ultrawater.py --noconfirm --clean --name UltraWater
+      - name: Build Executable
+        run: python build/build.py exe
 
       - name: Package tar.gz
         run: tar -czf UltraWater-linux.tar.gz -C dist UltraWater/
